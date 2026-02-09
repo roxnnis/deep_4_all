@@ -1,0 +1,248 @@
+{
+  "version": "1",
+  "metadata": {
+    "marimo_version": "0.19.2"
+  },
+  "cells": [
+    {
+      "id": "MJUe",
+      "code_hash": "aa626ac8d398e164a6d62cf3e96bea39",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h1 id=\"reseaux-de-neurones-de-la-theorie-a-la-pratique\">Reseaux de Neurones : De la Theorie a la Pratique</h1>\n<h2 id=\"master-2-informatique-introduction-a-lia\">Master 2 Informatique - Introduction a l'IA</h2>\n<hr />\n<h3 id=\"plan-du-cours\">Plan du cours</h3>\n<ol>\n<li><strong>Le Neurone Artificiel</strong> - Du biologique au mathematique</li>\n<li><strong>Fonctions d'Activation</strong> - Non-linearite et expressivite</li>\n<li><strong>Descente de Gradient</strong> - Optimisation et apprentissage</li>\n<li><strong>Backpropagation</strong> - La regle de la chaine en action</li>\n<li><strong>Multi-Layer Perceptron (MLP)</strong> - Architecture profonde</li>\n<li><strong>Demo Interactive</strong> - Micrograd en pratique</li>\n</ol></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "vblA",
+      "code_hash": "50f560a890c3ca7a02a221532ee4bc41",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><hr />\n<h2 id=\"1-le-neurone-artificiel\">1. Le Neurone Artificiel</h2>\n<h3 id=\"du-biologique-au-mathematique\">Du biologique au mathematique</h3>\n<span class=\"paragraph\">Le neurone biologique recoit des signaux electriques via ses <strong>dendrites</strong>,\nles integre dans le <strong>corps cellulaire</strong>, et si le signal depasse un seuil,\ntransmet une impulsion via son <strong>axone</strong>.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "bkHC",
+      "code_hash": "37db3601012a53dfae53ad15090590c4",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h3 id=\"le-modele-mathematique\">Le modele mathematique</h3>\n<span class=\"paragraph\">Le neurone artificiel (perceptron) imite ce comportement :</span>\n<marimo-tex class=\"arithmatex\">||[y = f\\left(\\sum_{i=1}^{n} w_i x_i + b\\right) = f(\\mathbf{w}^T \\mathbf{x} + b)||]</marimo-tex><span class=\"paragraph\">Ou :</span>\n<ul>\n<li><marimo-tex class=\"arithmatex\">||(\\mathbf{x} = (x_1, x_2, ..., x_n)||)</marimo-tex> : vecteur d'entree (les \"dendrites\")</li>\n<li><marimo-tex class=\"arithmatex\">||(\\mathbf{w} = (w_1, w_2, ..., w_n)||)</marimo-tex> : poids synaptiques (force des connexions)</li>\n<li><marimo-tex class=\"arithmatex\">||(b||)</marimo-tex> : biais (seuil d'activation)</li>\n<li><marimo-tex class=\"arithmatex\">||(f||)</marimo-tex> : fonction d'activation (decision de \"tirer\" ou non)</li>\n<li><marimo-tex class=\"arithmatex\">||(y||)</marimo-tex> : sortie du neurone</li>\n</ul></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "lEQa",
+      "code_hash": "e32698ca862a5bed8bc112d1daae062e",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h3 id=\"labo-interactif-la-frontiere-de-decision\">\ud83d\udd79\ufe0f Labo Interactif : La Fronti\u00e8re de D\u00e9cision</h3>\n<span class=\"paragraph\">Jouez avec les param\u00e8tres pour comprendre leur r\u00f4le g\u00e9om\u00e9trique :</span>\n<ul>\n<li><strong><marimo-tex class=\"arithmatex\">||(w_1||)</marimo-tex> et <marimo-tex class=\"arithmatex\">||(w_2||)</marimo-tex></strong> : Ils d\u00e9terminent l'<strong>angle</strong> (la rotation) de la ligne.</li>\n<li><strong><marimo-tex class=\"arithmatex\">||(b||)</marimo-tex> (Biais)</strong> : Il d\u00e9termine la <strong>position</strong> (le d\u00e9calage) de la ligne par rapport \u00e0 l'origine.</li>\n</ul></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "BYtC",
+      "code_hash": "eb93c7369d2c34387ec07952a267681d",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><hr />\n<h2 id=\"2-fonctions-dactivation\">2. Fonctions d'Activation</h2>\n<h3 id=\"pourquoi-avons-nous-besoin-de-non-linearite\">Pourquoi avons-nous besoin de non-linearite ?</h3>\n<span class=\"paragraph\">Sans fonction d'activation non-lineaire, un reseau de N couches\nest equivalent a une seule transformation lineaire :</span>\n<marimo-tex class=\"arithmatex\">||[f(g(x)) = W_2(W_1 x) = (W_2 W_1) x = W' x||]</marimo-tex><span class=\"paragraph\">La non-linearite permet d'apprendre des frontieres de decision complexes !</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "emfo",
+      "code_hash": "0c8a1d793dec2a93fa8042c2aad71d98",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h3 id=\"comparaison-des-fonctions-dactivation\">Comparaison des fonctions d'activation</h3>\n<table>\n<thead>\n<tr>\n<th>Fonction</th>\n<th>Avantages</th>\n<th>Inconvenients</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><strong>Sigmoid</strong></td>\n<td>Sortie bornee [0,1], probabiliste</td>\n<td>Vanishing gradient, pas centree sur 0</td>\n</tr>\n<tr>\n<td><strong>Tanh</strong></td>\n<td>Centree sur 0, sortie [-1,1]</td>\n<td>Vanishing gradient</td>\n</tr>\n<tr>\n<td><strong>ReLU</strong></td>\n<td>Simple, pas de vanishing gradient</td>\n<td>\"Dying ReLU\" (neurones morts)</td>\n</tr>\n<tr>\n<td><strong>Leaky ReLU</strong></td>\n<td>Evite les neurones morts</td>\n<td>Hyperparametre supplementaire</td>\n</tr>\n<tr>\n<td><strong>GELU/SiLU</strong></td>\n<td>Smooth, performant en pratique</td>\n<td>Plus couteux a calculer</td>\n</tr>\n</tbody>\n</table></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "Hstk",
+      "code_hash": "3b124c707d53060c735aeb3648f79f6f",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><hr />\n<h2 id=\"3-descente-de-gradient\">3. Descente de Gradient</h2>\n<h3 id=\"le-probleme-doptimisation\">Le probleme d'optimisation</h3>\n<span class=\"paragraph\">Objectif : trouver les poids <marimo-tex class=\"arithmatex\">||(\\mathbf{w}||)</marimo-tex> qui minimisent une fonction de cout <marimo-tex class=\"arithmatex\">||(\\mathcal{L}||)</marimo-tex></span>\n<marimo-tex class=\"arithmatex\">||[\\mathbf{w}^* = \\arg\\min_{\\mathbf{w}} \\mathcal{L}(\\mathbf{w})||]</marimo-tex><span class=\"paragraph\"><strong>Idee intuitive</strong> : Imaginez-vous sur une montagne dans le brouillard.\nPour descendre, vous tatez le sol autour de vous et avancez dans la direction\nqui descend le plus.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "nWHF",
+      "code_hash": "6f5f443ae4ef2292282df51502da5807",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h3 id=\"lalgorithme-de-descente-de-gradient\">\ud83d\udcc9 L'algorithme de Descente de Gradient</h3>\n<span class=\"paragraph\">L'objectif est de minimiser la fonction de co\u00fbt <marimo-tex class=\"arithmatex\">||(\\mathcal{L}(\\mathbf{w})||)</marimo-tex>.</span>\n<ol>\n<li><strong>Initialisation</strong> : Choisir un vecteur de poids initial <marimo-tex class=\"arithmatex\">||(\\mathbf{w}^{(0)}||)</marimo-tex> (al\u00e9atoire).</li>\n<li>\n<span class=\"paragraph\"><strong>It\u00e9ration</strong> : R\u00e9p\u00e9ter jusqu'\u00e0 la convergence :</span>\n<ul>\n<li>Calculer le gradient : <marimo-tex class=\"arithmatex\">||(\\nabla_{\\mathbf{w}} \\mathcal{L}||)</marimo-tex></li>\n<li>Mettre \u00e0 jour les poids :\n<marimo-tex class=\"arithmatex\">||(\\mathbf{w}^{(t+1)} \\leftarrow \\mathbf{w}^{(t)} - \\eta \\nabla_{\\mathbf{w}} \\mathcal{L}||)</marimo-tex></li>\n</ul>\n</li>\n</ol>\n<hr />\n<h4 id=\"resume-des-notations\">\ud83d\udcdd R\u00e9sum\u00e9 des notations</h4>\n<table>\n<thead>\n<tr>\n<th style=\"text-align: center;\">Symbole</th>\n<th style=\"text-align: left;\">Terme</th>\n<th style=\"text-align: left;\">Signification</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td style=\"text-align: center;\"><marimo-tex class=\"arithmatex\">||(\\mathbf{w}||)</marimo-tex></td>\n<td style=\"text-align: left;\"><strong>Vecteur de poids</strong></td>\n<td style=\"text-align: left;\">Les param\u00e8tres du mod\u00e8le que l'on cherche \u00e0 optimiser.</td>\n</tr>\n<tr>\n<td style=\"text-align: center;\"><marimo-tex class=\"arithmatex\">||(\\eta||)</marimo-tex></td>\n<td style=\"text-align: left;\"><strong>Taux d'apprentissage</strong></td>\n<td style=\"text-align: left;\">(<em>Learning rate</em>) Contr\u00f4le la taille du pas \u00e0 chaque it\u00e9ration.</td>\n</tr>\n<tr>\n<td style=\"text-align: center;\"><marimo-tex class=\"arithmatex\">||(\\mathcal{L}||)</marimo-tex></td>\n<td style=\"text-align: left;\"><strong>Fonction de co\u00fbt</strong></td>\n<td style=\"text-align: left;\">(<em>Loss function</em>) Mesure l'erreur entre la pr\u00e9diction et la r\u00e9alit\u00e9.</td>\n</tr>\n<tr>\n<td style=\"text-align: center;\"><marimo-tex class=\"arithmatex\">||(\\nabla||)</marimo-tex></td>\n<td style=\"text-align: left;\"><strong>Gradient</strong></td>\n<td style=\"text-align: left;\">Vecteur indiquant la direction de la pente la plus raide.</td>\n</tr>\n<tr>\n<td style=\"text-align: center;\"><marimo-tex class=\"arithmatex\">||(\\partial||)</marimo-tex></td>\n<td style=\"text-align: left;\"><strong>D\u00e9riv\u00e9e partielle</strong></td>\n<td style=\"text-align: left;\">Variation de l'erreur par rapport \u00e0 un seul poids sp\u00e9cifique.</td>\n</tr>\n</tbody>\n</table></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "ROlb",
+      "code_hash": "24455ba33f4d893f5f2ccc151331e007",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h3 id=\"labo-interactif-jouez-avec-le-learning-rate\">\ud83d\udd79\ufe0f Labo Interactif : Jouez avec le Learning Rate !</h3>\n<span class=\"paragraph\">Essayez de modifier le <strong>taux d'apprentissage</strong> (<marimo-tex class=\"arithmatex\">||(\\eta||)</marimo-tex>) ci-dessous.</span>\n<ul>\n<li><strong><marimo-tex class=\"arithmatex\">||(\\eta &lt; 0.1||)</marimo-tex></strong> : Descente lente (prudent mais long).</li>\n<li><strong><marimo-tex class=\"arithmatex\">||(\\eta \\approx 0.3||)</marimo-tex></strong> : Convergence rapide.</li>\n<li><strong><marimo-tex class=\"arithmatex\">||(\\eta &gt; 0.9||)</marimo-tex></strong> : Oscillations.</li>\n<li><strong><marimo-tex class=\"arithmatex\">||(\\eta &gt; 1.0||)</marimo-tex></strong> : Explosion (Divergence) !</li>\n</ul></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "Vxnm",
+      "code_hash": "0936203b2fc5ac3f6dc1ccacdd07346f",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><hr />\n<h2 id=\"4-backpropagation-la-regle-de-la-chaine\">4. \ud83e\udde0 Backpropagation : La R\u00e8gle de la Cha\u00eene</h2>\n<h3 id=\"le-probleme-fondamental\">Le probl\u00e8me fondamental</h3>\n<span class=\"paragraph\">Comment savoir quel poids modifier (et de combien) dans un r\u00e9seau de neurones g\u00e9ant ?</span>\n<span class=\"paragraph\"><strong>Situation :</strong> Imaginez un r\u00e9seau avec 1 million de poids. La pr\u00e9diction est fausse.</span>\n<ul>\n<li>Qui est responsable ?</li>\n<li>Le poids de la couche 1 ? De la couche 50 ? Tous un peu ?</li>\n</ul>\n<span class=\"paragraph\">C'est le probl\u00e8me d'<strong>attribution de cr\u00e9dit</strong> (ou de bl\u00e2me) : distribuer la responsabilit\u00e9 de l'erreur \u00e0 chaque param\u00e8tre du r\u00e9seau.</span>\n<hr />\n<h3 id=\"la-solution-la-regle-de-la-chaine-chain-rule\">La solution : La R\u00e8gle de la Cha\u00eene (<em>Chain Rule</em>)</h3>\n<h4 id=\"1-version-mathematique-simple\">1. Version math\u00e9matique simple</h4>\n<span class=\"paragraph\">Si on a une composition de fonctions <marimo-tex class=\"arithmatex\">||(y = f(g(x))||)</marimo-tex>, alors :</span>\n<marimo-tex class=\"arithmatex\">||[\\frac{dy}{dx} = \\frac{dy}{dg} \\cdot \\frac{dg}{dx}||]</marimo-tex><span class=\"paragraph\"><strong>Exemple concret :</strong> Soit <marimo-tex class=\"arithmatex\">||(y = (2x + 1)^3||)</marimo-tex></span>\n<span class=\"paragraph\">On pose <marimo-tex class=\"arithmatex\">||(g(x) = 2x + 1||)</marimo-tex> et <marimo-tex class=\"arithmatex\">||(f(g) = g^3||)</marimo-tex>, donc <marimo-tex class=\"arithmatex\">||(y = f(g(x))||)</marimo-tex>.</span>\n<table>\n<thead>\n<tr>\n<th style=\"text-align: center;\">\u00c9tape</th>\n<th style=\"text-align: left;\">Calcul</th>\n<th style=\"text-align: left;\">R\u00e9sultat</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td style=\"text-align: center;\">1</td>\n<td style=\"text-align: left;\"><marimo-tex class=\"arithmatex\">||(\\frac{dg}{dx} = \\frac{d(2x+1)}{dx}||)</marimo-tex></td>\n<td style=\"text-align: left;\"><marimo-tex class=\"arithmatex\">||(2||)</marimo-tex></td>\n</tr>\n<tr>\n<td style=\"text-align: center;\">2</td>\n<td style=\"text-align: left;\"><marimo-tex class=\"arithmatex\">||(\\frac{dy}{dg} = \\frac{d(g^3)}{dg}||)</marimo-tex></td>\n<td style=\"text-align: left;\"><marimo-tex class=\"arithmatex\">||(3g^2||)</marimo-tex></td>\n</tr>\n<tr>\n<td style=\"text-align: center;\">3</td>\n<td style=\"text-align: left;\"><marimo-tex class=\"arithmatex\">||(\\frac{dy}{dx} = \\frac{dy}{dg} \\cdot \\frac{dg}{dx}||)</marimo-tex></td>\n<td style=\"text-align: left;\"><marimo-tex class=\"arithmatex\">||(3g^2 \\cdot 2 = 6(2x+1)^2||)</marimo-tex></td>\n</tr>\n</tbody>\n</table>\n<hr />\n<h4 id=\"2-extension-a-plusieurs-etapes\">2. Extension \u00e0 plusieurs \u00e9tapes</h4>\n<span class=\"paragraph\">Pour une cha\u00eene plus longue <marimo-tex class=\"arithmatex\">||(y = f(g(h(x)))||)</marimo-tex> :</span>\n<marimo-tex class=\"arithmatex\">||[\\frac{dy}{dx} = \\frac{dy}{df} \\cdot \\frac{df}{dg} \\cdot \\frac{dg}{dh} \\cdot \\frac{dh}{dx}||]</marimo-tex><span class=\"paragraph\">C'est comme une <strong>cha\u00eene de transmission</strong> : chaque maillon multiplie le signal.</span>\n<hr />\n<h4 id=\"3-lintuition-le-systeme-de-communication\">3. L'intuition : Le syst\u00e8me de communication</h4>\n<span class=\"paragraph\">Pensez \u00e0 un <strong>jeu du t\u00e9l\u00e9phone</strong> dans une entreprise :</span>\n<table>\n<thead>\n<tr>\n<th style=\"text-align: left;\">Analogie</th>\n<th style=\"text-align: left;\">Math\u00e9matiques</th>\n<th style=\"text-align: left;\">Signification</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td style=\"text-align: left;\">Le PDG annonce un probl\u00e8me</td>\n<td style=\"text-align: left;\"><marimo-tex class=\"arithmatex\">||(\\frac{\\partial L}{\\partial L} = 1||)</marimo-tex></td>\n<td style=\"text-align: left;\">Signal d'erreur initial</td>\n</tr>\n<tr>\n<td style=\"text-align: left;\">Chaque manager relaie le message</td>\n<td style=\"text-align: left;\"><marimo-tex class=\"arithmatex\">||(\\times||)</marimo-tex> d\u00e9riv\u00e9e locale</td>\n<td style=\"text-align: left;\">Amplification ou att\u00e9nuation</td>\n</tr>\n<tr>\n<td style=\"text-align: left;\">L'employ\u00e9 re\u00e7oit sa part de responsabilit\u00e9</td>\n<td style=\"text-align: left;\"><marimo-tex class=\"arithmatex\">||(\\frac{\\partial L}{\\partial w}||)</marimo-tex></td>\n<td style=\"text-align: left;\">Gradient final du poids</td>\n</tr>\n</tbody>\n</table>\n<hr />\n<h4 id=\"4-la-formule-fondamentale\">4. La formule fondamentale</h4>\n<marimo-tex class=\"arithmatex\">||[\n\\boxed{\\text{Gradient d'un noeud} = \\underbrace{\\text{Gradient re\u00e7u}}_{\\text{\"Urgence\" venant de l'aval}} \\times \\underbrace{\\text{D\u00e9riv\u00e9e locale}}_{\\text{\"Influence\" calcul\u00e9e ici}}}\n||]</marimo-tex><hr />\n<h4 id=\"5-tableau-recapitulatif-des-termes\">5. Tableau r\u00e9capitulatif des termes</h4>\n<table>\n<thead>\n<tr>\n<th style=\"text-align: left;\">Terme</th>\n<th style=\"text-align: left;\">Nom</th>\n<th style=\"text-align: left;\">R\u00f4le</th>\n<th style=\"text-align: left;\">Exemple</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td style=\"text-align: left;\"><marimo-tex class=\"arithmatex\">||(\\frac{\\partial \\mathcal{L}}{\\partial \\text{sortie}}||)</marimo-tex></td>\n<td style=\"text-align: left;\"><strong>Gradient Externe</strong></td>\n<td style=\"text-align: left;\"><em>\"L'Urgence\"</em> : \u00c0 quel point la perte veut que ma sortie change</td>\n<td style=\"text-align: left;\">Si = 10, la sortie doit beaucoup changer</td>\n</tr>\n<tr>\n<td style=\"text-align: left;\"><marimo-tex class=\"arithmatex\">||(\\frac{\\partial \\text{sortie}}{\\partial \\text{entr\u00e9e}}||)</marimo-tex></td>\n<td style=\"text-align: left;\"><strong>D\u00e9riv\u00e9e Locale</strong></td>\n<td style=\"text-align: left;\"><em>\"L'Influence\"</em> : Si je bouge mon entr\u00e9e, est-ce que \u00e7a impacte ma sortie ?</td>\n<td style=\"text-align: left;\">Si = 0, l'entr\u00e9e n'a aucun effet</td>\n</tr>\n<tr>\n<td style=\"text-align: left;\"><marimo-tex class=\"arithmatex\">||(\\frac{\\partial \\mathcal{L}}{\\partial \\text{entr\u00e9e}}||)</marimo-tex></td>\n<td style=\"text-align: left;\"><strong>Gradient Propag\u00e9</strong></td>\n<td style=\"text-align: left;\">Le gradient \u00e0 transmettre aux noeuds pr\u00e9c\u00e9dents</td>\n<td style=\"text-align: left;\">Produit des deux termes ci-dessus</td>\n</tr>\n</tbody>\n</table>\n<hr />\n<h4 id=\"6-cas-particuliers-importants\">6. Cas particuliers importants</h4>\n<table>\n<thead>\n<tr>\n<th style=\"text-align: left;\">Situation</th>\n<th style=\"text-align: center;\">D\u00e9riv\u00e9e locale</th>\n<th style=\"text-align: left;\">Cons\u00e9quence</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td style=\"text-align: left;\">ReLU avec entr\u00e9e &lt; 0</td>\n<td style=\"text-align: center;\"><marimo-tex class=\"arithmatex\">||(0||)</marimo-tex></td>\n<td style=\"text-align: left;\">Gradient bloqu\u00e9 (\"neurone mort\")</td>\n</tr>\n<tr>\n<td style=\"text-align: left;\">Sigmoid satur\u00e9e (entr\u00e9e tr\u00e8s grande)</td>\n<td style=\"text-align: center;\"><marimo-tex class=\"arithmatex\">||(\\approx 0||)</marimo-tex></td>\n<td style=\"text-align: left;\">Gradient qui s'\u00e9vanouit</td>\n</tr>\n<tr>\n<td style=\"text-align: left;\">Connexion r\u00e9siduelle (<marimo-tex class=\"arithmatex\">||(y = x + f(x)||)</marimo-tex>)</td>\n<td style=\"text-align: center;\"><marimo-tex class=\"arithmatex\">||(1 + f'(x)||)</marimo-tex></td>\n<td style=\"text-align: left;\">Gradient pr\u00e9serv\u00e9 (au moins 1)</td>\n</tr>\n</tbody>\n</table></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "DnEU",
+      "code_hash": "9aacc7168872840e25668cfd634a221c",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h3 id=\"backpropagation-en-action\">\ud83d\udd0d Backpropagation en Action</h3>\n<span class=\"paragraph\">Prenons un exemple concret : <marimo-tex class=\"arithmatex\">||(L = (w \\cdot x - y)^2||)</marimo-tex></span>\n<hr />\n<span class=\"paragraph\"><strong>1. Forward pass</strong> (On calcule le r\u00e9sultat \u00e9tape par \u00e9tape) :</span>\n<table>\n<thead>\n<tr>\n<th style=\"text-align: center;\">\u00c9tape</th>\n<th style=\"text-align: left;\">Op\u00e9ration</th>\n<th style=\"text-align: left;\">Description</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td style=\"text-align: center;\">1</td>\n<td style=\"text-align: left;\"><marimo-tex class=\"arithmatex\">||(z = w \\cdot x||)</marimo-tex></td>\n<td style=\"text-align: left;\">Multiplication du poids par l'entr\u00e9e</td>\n</tr>\n<tr>\n<td style=\"text-align: center;\">2</td>\n<td style=\"text-align: left;\"><marimo-tex class=\"arithmatex\">||(a = z - y||)</marimo-tex></td>\n<td style=\"text-align: left;\">Diff\u00e9rence entre la pr\u00e9diction et la cible</td>\n</tr>\n<tr>\n<td style=\"text-align: center;\">3</td>\n<td style=\"text-align: left;\"><marimo-tex class=\"arithmatex\">||(L = a^2||)</marimo-tex></td>\n<td style=\"text-align: left;\">Erreur quadratique (toujours positive)</td>\n</tr>\n</tbody>\n</table>\n<span class=\"paragraph\"><em>Exemple num\u00e9rique :</em> Si <marimo-tex class=\"arithmatex\">||(w=2||)</marimo-tex>, <marimo-tex class=\"arithmatex\">||(x=3||)</marimo-tex>, <marimo-tex class=\"arithmatex\">||(y=5||)</marimo-tex> :</span>\n<ul>\n<li><marimo-tex class=\"arithmatex\">||(z = 2 \\times 3 = 6||)</marimo-tex></li>\n<li><marimo-tex class=\"arithmatex\">||(a = 6 - 5 = 1||)</marimo-tex></li>\n<li><marimo-tex class=\"arithmatex\">||(L = 1^2 = 1||)</marimo-tex></li>\n</ul>\n<hr />\n<span class=\"paragraph\"><strong>2. Backward pass</strong> (On remonte le signal d'erreur) :</span>\n<span class=\"paragraph\">On part de la fin et on applique la r\u00e8gle : <strong>grad = urgence \u00d7 influence</strong></span>\n<hr />\n<ul>\n<li>\n<span class=\"paragraph\"><strong>\u00c9tape 0 (Initialisation) :</strong></span>\n<ul>\n<li>On d\u00e9marre avec <marimo-tex class=\"arithmatex\">||(\\frac{\\partial L}{\\partial L} = 1||)</marimo-tex> (la perte s'influence elle-m\u00eame \u00e0 100%)</li>\n<li>C'est le \"signal d'erreur\" initial qu'on va propager vers l'arri\u00e8re</li>\n</ul>\n</li>\n</ul>\n<hr />\n<ul>\n<li>\n<span class=\"paragraph\"><strong>\u00c9tape 1 (Noeud <marimo-tex class=\"arithmatex\">||(L = a^2||)</marimo-tex>) \u2192 On cherche <marimo-tex class=\"arithmatex\">||(\\frac{\\partial L}{\\partial a}||)</marimo-tex> :</strong></span>\n<ul>\n<li><strong>Question :</strong> Comment <marimo-tex class=\"arithmatex\">||(a||)</marimo-tex> influence-t-il <marimo-tex class=\"arithmatex\">||(L||)</marimo-tex> ?</li>\n<li><strong>Fonction locale :</strong> <marimo-tex class=\"arithmatex\">||(L = a^2||)</marimo-tex></li>\n<li><strong>D\u00e9riv\u00e9e locale :</strong> <marimo-tex class=\"arithmatex\">||(\\frac{\\partial L}{\\partial a} = 2a||)</marimo-tex> (r\u00e8gle de puissance)</li>\n<li><strong>Calcul :</strong> Urgence re\u00e7ue \u00d7 Influence locale = <marimo-tex class=\"arithmatex\">||(1 \\times 2a||)</marimo-tex></li>\n<li><strong>R\u00e9sultat :</strong> <marimo-tex class=\"arithmatex\">||(\\boxed{\\frac{\\partial L}{\\partial a} = 2a}||)</marimo-tex></li>\n<li><em>Exemple :</em> Si <marimo-tex class=\"arithmatex\">||(a=1||)</marimo-tex>, alors <marimo-tex class=\"arithmatex\">||(\\frac{\\partial L}{\\partial a} = 2||)</marimo-tex></li>\n</ul>\n</li>\n</ul>\n<hr />\n<ul>\n<li>\n<span class=\"paragraph\"><strong>\u00c9tape 2 (Noeud <marimo-tex class=\"arithmatex\">||(a = z - y||)</marimo-tex>) \u2192 On cherche <marimo-tex class=\"arithmatex\">||(\\frac{\\partial L}{\\partial z}||)</marimo-tex> :</strong></span>\n<ul>\n<li><strong>Question :</strong> Comment <marimo-tex class=\"arithmatex\">||(z||)</marimo-tex> influence-t-il <marimo-tex class=\"arithmatex\">||(a||)</marimo-tex> ?</li>\n<li><strong>Fonction locale :</strong> <marimo-tex class=\"arithmatex\">||(a = z - y||)</marimo-tex></li>\n<li><strong>D\u00e9riv\u00e9e locale :</strong> <marimo-tex class=\"arithmatex\">||(\\frac{\\partial a}{\\partial z} = 1||)</marimo-tex> (coefficient devant <marimo-tex class=\"arithmatex\">||(z||)</marimo-tex>)</li>\n<li><strong>Calcul :</strong> Urgence re\u00e7ue (de <marimo-tex class=\"arithmatex\">||(a||)</marimo-tex>) \u00d7 Influence locale = <marimo-tex class=\"arithmatex\">||(2a \\times 1||)</marimo-tex></li>\n<li><strong>R\u00e9sultat :</strong> <marimo-tex class=\"arithmatex\">||(\\boxed{\\frac{\\partial L}{\\partial z} = 2a}||)</marimo-tex></li>\n<li><em>Exemple :</em> Si <marimo-tex class=\"arithmatex\">||(a=1||)</marimo-tex>, alors <marimo-tex class=\"arithmatex\">||(\\frac{\\partial L}{\\partial z} = 2||)</marimo-tex></li>\n</ul>\n</li>\n</ul>\n<hr />\n<ul>\n<li>\n<span class=\"paragraph\"><strong>\u00c9tape 2bis (Noeud <marimo-tex class=\"arithmatex\">||(a = z - y||)</marimo-tex>) \u2192 On cherche aussi <marimo-tex class=\"arithmatex\">||(\\frac{\\partial L}{\\partial y}||)</marimo-tex> :</strong></span>\n<ul>\n<li><strong>Question :</strong> Comment <marimo-tex class=\"arithmatex\">||(y||)</marimo-tex> influence-t-il <marimo-tex class=\"arithmatex\">||(a||)</marimo-tex> ?</li>\n<li><strong>Fonction locale :</strong> <marimo-tex class=\"arithmatex\">||(a = z - y||)</marimo-tex></li>\n<li><strong>D\u00e9riv\u00e9e locale :</strong> <marimo-tex class=\"arithmatex\">||(\\frac{\\partial a}{\\partial y} = -1||)</marimo-tex> (coefficient devant <marimo-tex class=\"arithmatex\">||(y||)</marimo-tex>)</li>\n<li><strong>Calcul :</strong> Urgence re\u00e7ue (de <marimo-tex class=\"arithmatex\">||(a||)</marimo-tex>) \u00d7 Influence locale = <marimo-tex class=\"arithmatex\">||(2a \\times (-1)||)</marimo-tex></li>\n<li><strong>R\u00e9sultat :</strong> <marimo-tex class=\"arithmatex\">||(\\boxed{\\frac{\\partial L}{\\partial y} = -2a}||)</marimo-tex></li>\n<li><em>Interpr\u00e9tation :</em> Le signe n\u00e9gatif signifie que si on augmente <marimo-tex class=\"arithmatex\">||(y||)</marimo-tex>, la perte diminue (et vice-versa)</li>\n</ul>\n</li>\n</ul>\n<hr />\n<ul>\n<li>\n<span class=\"paragraph\"><strong>\u00c9tape 3 (Noeud <marimo-tex class=\"arithmatex\">||(z = w \\cdot x||)</marimo-tex>) \u2192 On cherche <marimo-tex class=\"arithmatex\">||(\\frac{\\partial L}{\\partial w}||)</marimo-tex> :</strong></span>\n<ul>\n<li><strong>Question :</strong> Comment <marimo-tex class=\"arithmatex\">||(w||)</marimo-tex> influence-t-il <marimo-tex class=\"arithmatex\">||(z||)</marimo-tex> ?</li>\n<li><strong>Fonction locale :</strong> <marimo-tex class=\"arithmatex\">||(z = w \\cdot x||)</marimo-tex></li>\n<li><strong>D\u00e9riv\u00e9e locale :</strong> <marimo-tex class=\"arithmatex\">||(\\frac{\\partial z}{\\partial w} = x||)</marimo-tex> (on d\u00e9rive par rapport \u00e0 <marimo-tex class=\"arithmatex\">||(w||)</marimo-tex>, donc <marimo-tex class=\"arithmatex\">||(x||)</marimo-tex> est une constante)</li>\n<li><strong>Calcul :</strong> Urgence re\u00e7ue (de <marimo-tex class=\"arithmatex\">||(z||)</marimo-tex>) \u00d7 Influence locale = <marimo-tex class=\"arithmatex\">||(2a \\times x||)</marimo-tex></li>\n<li><strong>R\u00e9sultat :</strong> <marimo-tex class=\"arithmatex\">||(\\boxed{\\frac{\\partial L}{\\partial w} = 2ax = 2x(wx - y)}||)</marimo-tex></li>\n<li><em>Exemple :</em> Si <marimo-tex class=\"arithmatex\">||(a=1||)</marimo-tex> et <marimo-tex class=\"arithmatex\">||(x=3||)</marimo-tex>, alors <marimo-tex class=\"arithmatex\">||(\\frac{\\partial L}{\\partial w} = 6||)</marimo-tex></li>\n<li><em>Interpr\u00e9tation :</em> Plus <marimo-tex class=\"arithmatex\">||(x||)</marimo-tex> est grand, plus <marimo-tex class=\"arithmatex\">||(w||)</marimo-tex> a d'influence sur la perte !</li>\n</ul>\n</li>\n</ul>\n<hr />\n<ul>\n<li>\n<span class=\"paragraph\"><strong>\u00c9tape 3bis (Noeud <marimo-tex class=\"arithmatex\">||(z = w \\cdot x||)</marimo-tex>) \u2192 On cherche aussi <marimo-tex class=\"arithmatex\">||(\\frac{\\partial L}{\\partial x}||)</marimo-tex> :</strong></span>\n<ul>\n<li><strong>Question :</strong> Comment <marimo-tex class=\"arithmatex\">||(x||)</marimo-tex> influence-t-il <marimo-tex class=\"arithmatex\">||(z||)</marimo-tex> ?</li>\n<li><strong>Fonction locale :</strong> <marimo-tex class=\"arithmatex\">||(z = w \\cdot x||)</marimo-tex></li>\n<li><strong>D\u00e9riv\u00e9e locale :</strong> <marimo-tex class=\"arithmatex\">||(\\frac{\\partial z}{\\partial x} = w||)</marimo-tex> (on d\u00e9rive par rapport \u00e0 <marimo-tex class=\"arithmatex\">||(x||)</marimo-tex>, donc <marimo-tex class=\"arithmatex\">||(w||)</marimo-tex> est une constante)</li>\n<li><strong>Calcul :</strong> Urgence re\u00e7ue (de <marimo-tex class=\"arithmatex\">||(z||)</marimo-tex>) \u00d7 Influence locale = <marimo-tex class=\"arithmatex\">||(2a \\times w||)</marimo-tex></li>\n<li><strong>R\u00e9sultat :</strong> <marimo-tex class=\"arithmatex\">||(\\boxed{\\frac{\\partial L}{\\partial x} = 2aw = 2w(wx - y)}||)</marimo-tex></li>\n</ul>\n</li>\n</ul>\n<hr />\n<span class=\"paragraph\"><strong>3. R\u00e9sum\u00e9 des gradients :</strong></span>\n<table>\n<thead>\n<tr>\n<th style=\"text-align: center;\">Variable</th>\n<th style=\"text-align: left;\">Gradient</th>\n<th style=\"text-align: left;\">R\u00f4le</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td style=\"text-align: center;\"><marimo-tex class=\"arithmatex\">||(w||)</marimo-tex></td>\n<td style=\"text-align: left;\"><marimo-tex class=\"arithmatex\">||(\\frac{\\partial L}{\\partial w} = 2x(wx-y)||)</marimo-tex></td>\n<td style=\"text-align: left;\">Utilis\u00e9 pour mettre \u00e0 jour le poids</td>\n</tr>\n<tr>\n<td style=\"text-align: center;\"><marimo-tex class=\"arithmatex\">||(x||)</marimo-tex></td>\n<td style=\"text-align: left;\"><marimo-tex class=\"arithmatex\">||(\\frac{\\partial L}{\\partial x} = 2w(wx-y)||)</marimo-tex></td>\n<td style=\"text-align: left;\">Propag\u00e9 vers les couches pr\u00e9c\u00e9dentes</td>\n</tr>\n<tr>\n<td style=\"text-align: center;\"><marimo-tex class=\"arithmatex\">||(y||)</marimo-tex></td>\n<td style=\"text-align: left;\"><marimo-tex class=\"arithmatex\">||(\\frac{\\partial L}{\\partial y} = -2(wx-y)||)</marimo-tex></td>\n<td style=\"text-align: left;\">La cible (pas de mise \u00e0 jour)</td>\n</tr>\n</tbody>\n</table>\n<span class=\"paragraph\"><strong>Mise \u00e0 jour du poids :</strong> <marimo-tex class=\"arithmatex\">||(w_{\\text{nouveau}} = w - \\eta \\cdot \\frac{\\partial L}{\\partial w}||)</marimo-tex></span>\n<span class=\"paragraph\">o\u00f9 <marimo-tex class=\"arithmatex\">||(\\eta||)</marimo-tex> est le <em>learning rate</em> (taux d'apprentissage).</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "Pvdt",
+      "code_hash": "50bb50c908d23b1543ab71f3bd5ae44b",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h3 id=\"note-cruciale-laccumulation\">\u26a0\ufe0f Note cruciale : L'Accumulation (<code>+=</code>)</h3>\n<span class=\"paragraph\">Que se passe-t-il si une variable est utilis\u00e9e <strong>plusieurs fois</strong> ?</span>\n<span class=\"paragraph\">Imaginez une rivi\u00e8re avec deux affluents qui se rejoignent. Le d\u00e9bit final est la <strong>somme</strong> des deux.</span>\n<ul>\n<li>Math\u00e9matiquement : C'est la <strong>R\u00e8gle de la Cha\u00eene Multivari\u00e9e</strong>.</li>\n<li>Code : C'est pour \u00e7a qu'on utilise <code>self.grad += ...</code> et non <code>=</code>.</li>\n</ul>\n<span class=\"paragraph\">Si <marimo-tex class=\"arithmatex\">||(x||)</marimo-tex> influence la perte via deux chemins diff\u00e9rents, on doit additionner l'urgence venant des deux chemins pour conna\u00eetre l'urgence totale sur <marimo-tex class=\"arithmatex\">||(x||)</marimo-tex>.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "Hbol",
+      "code_hash": "1d0db38904205bec4d6f6f6a1f6cec3e",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "PKri",
+      "code_hash": "197387f951d7d64dd988cb292f122f27",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "Xref",
+      "code_hash": "8bfe8389c30325227575e0a62bbf2494",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "SFPL",
+      "code_hash": "2427ca22a7eae124552c0a2f400363d6",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "RGSE",
+      "code_hash": "2b426ebc1fc6636fd550ccadcc383e56",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "Kclp",
+      "code_hash": "39a9ab08278c6be1edfafcb719abb015",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "iLit",
+      "code_hash": "d0256d8e8239c1c30c15f97d4073bef3",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "ZHCJ",
+      "code_hash": "a197b6791912f730b0c033488372ede7",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "qnkX",
+      "code_hash": "2e0fe293ab124dbe0361d6cabec9f983",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "TqIu",
+      "code_hash": "25972543693d454f77e5a4bfa82b02e6",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "ulZA",
+      "code_hash": "8e07652ed001abc2951754f782ec01c0",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "ecfG",
+      "code_hash": "c43161bf317ac52d01f46f9f8e0df4c4",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "ZBYS",
+      "code_hash": "7b982e29c2552e801c329fb5e3aee14d",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "aLJB",
+      "code_hash": "1d763f9d525a510cc30e9645832d7f90",
+      "outputs": [],
+      "console": []
+    }
+  ]
+}

@@ -22,6 +22,7 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 from torch.utils.data import Dataset, DataLoader
+import torch.nn.utils.rnn as rnn_utils
 
 from baseline_model import DungeonOracle, count_parameters
 
@@ -104,6 +105,31 @@ class DungeonLogDataset(Dataset):
     @property
     def vocab_size(self):
         return len(self.vocab)
+
+
+# ============================================================================
+# Collate function pour pack_padded_sequence
+# ============================================================================
+
+
+def collate_fn(batch):
+    """Collate function qui trie les séquences par longueur décroissante."""
+    sequences, labels, lengths = zip(*batch)
+    
+    # Trier par longueur décroissante
+    lengths_tensor = torch.stack(list(lengths))
+    sorted_indices = torch.argsort(lengths_tensor, descending=True)
+    
+    sequences_sorted = [sequences[i] for i in sorted_indices]
+    labels_sorted = [labels[i] for i in sorted_indices]
+    lengths_sorted = [lengths[i] for i in sorted_indices]
+    
+    # Stack
+    sequences_padded = torch.stack(sequences_sorted)
+    labels_stacked = torch.stack(labels_sorted)
+    lengths_stacked = torch.stack(lengths_sorted)
+    
+    return sequences_padded, labels_stacked, lengths_stacked
 
 
 # ============================================================================
@@ -242,12 +268,14 @@ def main(args):
     train_loader = DataLoader(
             train_dataset,
             batch_size=args.batch_size,
-            shuffle=True
+            shuffle=True,
+            collate_fn=collate_fn
             )
     val_loader = DataLoader(
             val_dataset,
             batch_size=args.batch_size,
-            shuffle=False
+            shuffle=False,
+            collate_fn=collate_fn
             )
 
     print(f"Train: {len(train_dataset)} séquences")
@@ -273,6 +301,7 @@ def main(args):
             max_length=train_dataset.max_length,
             bidirectional=args.bidirectional,
             padding_idx=train_dataset.pad_idx,
+            proj_dim=args.proj_dim,
             )
     model = model.to(device)
 
@@ -299,10 +328,22 @@ def main(args):
 
     # Scheduler (optionnel)
     scheduler = None
-    if args.use_scheduler:
-        scheduler = optim.lr_scheduler.ReduceLROnPlateau(
-                optimizer, mode='max', factor=0.5, patience=5, verbose=True
+    # Activation automatique du scheduler si l'utilisateur passe --scheduler_type
+    if args.use_scheduler or args.scheduler_type is not None:
+        stype = args.scheduler_type or 'plateau'
+        if stype == 'plateau':
+            scheduler = optim.lr_scheduler.ReduceLROnPlateau(
+                optimizer, mode='max', factor=args.scheduler_gamma,
+                patience=args.patience
                 )
+        elif stype == 'step':
+            scheduler = optim.lr_scheduler.StepLR(
+                    optimizer, step_size=args.scheduler_step_size, gamma=args.scheduler_gamma
+                    )
+        elif stype == 'cosine':
+            scheduler = optim.lr_scheduler.CosineAnnealingLR(
+                    optimizer, T_max=args.epochs
+                    )
 
     print(f"Optimiseur: {args.optimizer.upper()}, LR: {args.learning_rate}")
 
@@ -331,7 +372,11 @@ def main(args):
 
         # Scheduler
         if scheduler:
-            scheduler.step(val_acc)
+            # ReduceLROnPlateau needs the metric; les autres s'incrémente chaque epoch
+            if isinstance(scheduler, optim.lr_scheduler.ReduceLROnPlateau):
+                scheduler.step(val_acc)
+            else:
+                scheduler.step()
 
         # Historique
         history['train_loss'].append(train_loss)
@@ -444,10 +489,14 @@ if __name__ == "__main__":
             help='Dropout entre les couches RNN'
             )
     parser.add_argument(
+            '--proj_dim', type=int, default=None,
+            help='Dimension de projection après embedding (réduit entrée RNN)'
+            )
+    parser.add_argument(
             '--mode',
             type=str,
             default='linear',
-            choices=['linear', 'rnn', 'lstm'],
+            choices=['linear', 'rnn', 'lstm', 'gru'],
             help='Architecture du modèle (default: %(default)s)')
     parser.add_argument(
             '--bidirectional', action='store_true', default=False,
@@ -479,6 +528,20 @@ if __name__ == "__main__":
     parser.add_argument(
             '--use_scheduler', action='store_true', default=False,
             help='Utiliser un learning rate scheduler'
+            )
+
+    parser.add_argument(
+            '--scheduler_type', type=str, default=None,
+            choices=['plateau', 'step', 'cosine'],
+            help='Type de scheduler à utiliser (si spécifié, active le scheduler)'
+            )
+    parser.add_argument(
+            '--scheduler_step_size', type=int, default=5,
+            help='Step size pour StepLR (epochs)'
+            )
+    parser.add_argument(
+            '--scheduler_gamma', type=float, default=0.5,
+            help='Gamma/factor pour le scheduler (ex: StepLR ou ReduceLROnPlateau factor)'
             )
 
     # Early stopping

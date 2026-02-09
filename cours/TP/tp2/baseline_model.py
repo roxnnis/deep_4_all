@@ -11,6 +11,7 @@ Contient:
 
 import torch
 import torch.nn as nn
+from torch.nn.utils.rnn import pack_padded_sequence
 
 
 # ============================================================================
@@ -88,7 +89,8 @@ class DungeonOracle(nn.Module):
             mode: str = "linear",
             bidirectional: bool = False,
             padding_idx: int = 0,
-            max_length: int = 140
+            max_length: int = 140,
+            proj_dim: int = None
             ):
         """
         Args:
@@ -107,6 +109,7 @@ class DungeonOracle(nn.Module):
         self.num_layers = num_layers
         self.bidirectional = bidirectional
         self.mode = mode.lower().strip()
+        self.proj_dim = proj_dim
 
         # Couche d'embedding : transforme les IDs en vecteurs denses
         # Le padding_idx=0 fait que le vecteur pour <PAD> reste à zéro
@@ -115,6 +118,10 @@ class DungeonOracle(nn.Module):
                 embedding_dim=embed_dim,
                 padding_idx=padding_idx
                 )
+
+        # Projection optionnelle pour réduire la dimension d'entrée du RNN
+        # Permet de garder des embeddings larges tout en réduisant les paramètres du RNN
+        self.proj = nn.Linear(embed_dim, proj_dim) if proj_dim is not None else None
 
         # Approche Baseline Linéaire (Alternative au RNN)
         # On aplatit tout : (Batch, Seq_Len * Embed_Dim)
@@ -131,16 +138,24 @@ class DungeonOracle(nn.Module):
         if self.mode != "linear":
             # Couche récurrente
             # PROBLEME: Par défaut c'est un RNN simple qui souffre du vanishing gradient
-            rnn_class = nn.LSTM if self.mode == "lstm" else nn.RNN
+            # Support des types : 'lstm', 'gru', 'rnn'
+            if self.mode == "lstm":
+                rnn_class = nn.LSTM
+            elif self.mode == "gru":
+                rnn_class = nn.GRU
+            else:
+                rnn_class = nn.RNN
+
+            rnn_input_size = self.proj_dim if self.proj_dim is not None else embed_dim
 
             self.rnn = rnn_class(
-                    input_size=embed_dim,
-                    hidden_size=hidden_dim,
-                    num_layers=num_layers,
-                    batch_first=True,
-                    dropout=dropout if num_layers > 1 else 0,
-                    bidirectional=bidirectional
-                    )
+                input_size=rnn_input_size,
+                hidden_size=hidden_dim,
+                num_layers=num_layers,
+                batch_first=True,
+                dropout=dropout if num_layers > 1 else 0,
+                bidirectional=bidirectional
+                )
 
             # Couche de classification
             # Si bidirectionnel, on a 2x hidden_dim
@@ -168,14 +183,40 @@ class DungeonOracle(nn.Module):
         # (batch, seq_len) → (batch, seq_len, embed_dim)
         embedded = self.embedding(x)
 
+        # Projection optionnelle (batch, seq_len, embed_dim) -> (batch, seq_len, proj_dim)
+        if self.proj is not None:
+            embedded = self.proj(embedded)
+
         if self.mode != "linear":
-            # Étape 2: Passage dans le RNN/LSTM
-            # output: (batch, seq_len, hidden_dim * num_directions)
-            # hidden: (num_layers * num_directions, batch, hidden_dim)
-            if self.mode == "lstm":
-                output, (hidden, cell) = self.rnn(embedded)
+            # Étape 2: Passage dans le RNN/LSTM avec pack_padded_sequence
+            # Pack la séquence pour ignorer le padding
+            if lengths is not None:
+                # Assurer que lengths est sur CPU pour pack_padded_sequence
+                lengths_cpu = lengths.cpu()
+                packed_embedded = pack_padded_sequence(
+                    embedded, 
+                    lengths_cpu, 
+                    batch_first=True, 
+                    enforce_sorted=True
+                )
             else:
-                output, hidden = self.rnn(embedded)
+                packed_embedded = embedded
+            
+            # Passer à travers le RNN/LSTM
+            if self.mode == "lstm":
+                if lengths is not None:
+                    packed_output, (hidden, cell) = self.rnn(packed_embedded)
+                else:
+                    output, (hidden, cell) = self.rnn(embedded)
+            else:
+                if lengths is not None:
+                    packed_output, hidden = self.rnn(packed_embedded)
+                else:
+                    output, hidden = self.rnn(embedded)
+            
+            # Unpack si nécessaire (optionnel, on n'utilise que hidden)
+            # if lengths is not None:
+            #     output, _ = pad_packed_sequence(packed_output, batch_first=True)
 
             # Étape 3: Extraire le dernier état caché
             # Pour un RNN standard, on prend la dernière sortie
