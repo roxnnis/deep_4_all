@@ -17,12 +17,7 @@ class DASPipelineQwen:
                 bnb_4bit_compute_dtype=torch.float16,
                 )
 
-        model_id = "unsloth/Qwen2.5-7B-Instruct-bnb-4bit"
-        # Note: "Qwen3" n'est pas encore sorti officiellement au moment de mes données,
-        # j'utilise ici un ID Qwen 2.5 4-bit très performant comme placeholder pour votre ID spécifique.
-        # Remplacez par votre ID exact : "unsloth/Qwen3-4B-Instruct-2507-unsloth-bnb-4bit"
-
-        self.model_id = "unsloth/Qwen2.5-7B-Instruct-bnb-4bit"  # Mettez votre ID ici
+        self.model_id = "unsloth/Qwen2.5-7B-Instruct-bnb-4bit"
 
         print(f"Chargement du modèle étudiant : {self.model_id}...")
         self.tokenizer = AutoTokenizer.from_pretrained(self.model_id, trust_remote_code=True)
